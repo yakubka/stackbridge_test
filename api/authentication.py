@@ -3,7 +3,7 @@ from django.conf import settings
 from rest_framework.authentication import BaseAuthentication
 from rest_framework.exceptions import AuthenticationFailed
 
-from .models import User, TokenBlacklist
+from .models import User, BlacklistedToken
 
 
 class JWTAuth(BaseAuthentication):
@@ -12,7 +12,7 @@ class JWTAuth(BaseAuthentication):
         if not header.startswith('Bearer '):
             return None
         token = header[7:]
-        if TokenBlacklist.objects.filter(token=token).exists():
+        if BlacklistedToken.objects.filter(token=token).exists():
             raise AuthenticationFailed('token revoked')
         try:
             payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])

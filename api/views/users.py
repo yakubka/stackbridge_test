@@ -1,21 +1,16 @@
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from ..authentication import JWTAuth
-from ..models import User, TokenBlacklist
+from ..models import User, BlacklistedToken
 
 
 class ProfileView(APIView):
     authentication_classes = [JWTAuth]
-
-    def _require_auth(self, request):
-        if not hasattr(request.user, 'id'):
-            return Response({'error': 'not authenticated'}, status=401)
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        err = self._require_auth(request)
-        if err:
-            return err
         u = request.user
         return Response({
             'id': u.id,
@@ -27,9 +22,6 @@ class ProfileView(APIView):
         })
 
     def patch(self, request):
-        err = self._require_auth(request)
-        if err:
-            return err
         u = request.user
         for field in ('first_name', 'last_name', 'middle_name', 'email'):
             if field in request.data:
@@ -40,11 +32,8 @@ class ProfileView(APIView):
         return Response({'ok': True})
 
     def delete(self, request):
-        err = self._require_auth(request)
-        if err:
-            return err
         u = request.user
         u.is_active = False
         u.save()
-        TokenBlacklist.objects.get_or_create(token=request.auth)
+        BlacklistedToken.objects.get_or_create(token=request.auth)
         return Response({'ok': True})

@@ -18,12 +18,12 @@ class Migration(migrations.Migration):
             options={'db_table': 'roles'},
         ),
         migrations.CreateModel(
-            name='BusinessElement',
+            name='Resource',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False)),
                 ('name', models.CharField(max_length=100, unique=True)),
             ],
-            options={'db_table': 'business_elements'},
+            options={'db_table': 'resources'},
         ),
         migrations.CreateModel(
             name='User',
@@ -62,7 +62,7 @@ class Migration(migrations.Migration):
                 )),
                 ('element', models.ForeignKey(
                     on_delete=django.db.models.deletion.CASCADE,
-                    to='api.businesselement',
+                    to='api.resource',
                 )),
             ],
             options={'db_table': 'access_roles_rules'},
@@ -72,12 +72,12 @@ class Migration(migrations.Migration):
             unique_together={('role', 'element')},
         ),
         migrations.CreateModel(
-            name='TokenBlacklist',
+            name='BlacklistedToken',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False)),
                 ('token', models.TextField(unique=True)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
             ],
-            options={'db_table': 'token_blacklist'},
+            options={'db_table': 'blacklisted_tokens'},
         ),
     ]

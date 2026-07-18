@@ -3,7 +3,7 @@ from rest_framework.response import Response
 
 from ..authentication import JWTAuth
 from ..permissions import IsAdmin
-from ..models import AccessRule, Role, BusinessElement
+from ..models import AccessRule, Role, Resource
 
 PERM_FIELDS = ('can_read', 'can_read_all', 'can_create', 'can_update', 'can_update_all', 'can_delete', 'can_delete_all')
 
@@ -27,8 +27,8 @@ class RulesView(APIView):
         d = request.data
         try:
             role = Role.objects.get(name=d['role'])
-            element = BusinessElement.objects.get(name=d['element'])
-        except (Role.DoesNotExist, BusinessElement.DoesNotExist) as e:
+            element = Resource.objects.get(name=d['element'])
+        except (Role.DoesNotExist, Resource.DoesNotExist) as e:
             return Response({'error': str(e)}, status=404)
         rule, _ = AccessRule.objects.update_or_create(
             role=role, element=element,

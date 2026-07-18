@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 
-from api.models import Role, BusinessElement, AccessRule, User
+from api.models import Role, Resource, AccessRule, User
 
 ROLES = ['admin', 'manager', 'user', 'guest']
 ELEMENTS = ['users', 'products', 'stores', 'orders', 'access_rules']
@@ -16,7 +16,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         roles = {n: Role.objects.get_or_create(name=n)[0] for n in ROLES}
-        els = {n: BusinessElement.objects.get_or_create(name=n)[0] for n in ELEMENTS}
+        els = {n: Resource.objects.get_or_create(name=n)[0] for n in ELEMENTS}
 
         for el in els.values():
             AccessRule.objects.update_or_create(role=roles['admin'], element=el, defaults=full)

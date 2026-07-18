@@ -34,16 +34,16 @@ class User(models.Model):
         return bcrypt.hashpw(raw.encode(), bcrypt.gensalt()).decode()
 
 
-class BusinessElement(models.Model):
+class Resource(models.Model):
     name = models.CharField(max_length=100, unique=True)
 
     class Meta:
-        db_table = 'business_elements'
+        db_table = 'resources'
 
 
 class AccessRule(models.Model):
     role = models.ForeignKey(Role, on_delete=models.CASCADE, related_name='rules')
-    element = models.ForeignKey(BusinessElement, on_delete=models.CASCADE)
+    element = models.ForeignKey(Resource, on_delete=models.CASCADE)
     can_read = models.BooleanField(default=False)
     can_read_all = models.BooleanField(default=False)
     can_create = models.BooleanField(default=False)
@@ -57,9 +57,9 @@ class AccessRule(models.Model):
         unique_together = ('role', 'element')
 
 
-class TokenBlacklist(models.Model):
+class BlacklistedToken(models.Model):
     token = models.TextField(unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        db_table = 'token_blacklist'
+        db_table = 'blacklisted_tokens'

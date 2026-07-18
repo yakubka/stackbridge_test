@@ -1,11 +1,12 @@
 import datetime
 import jwt
 from django.conf import settings
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from ..authentication import JWTAuth
-from ..models import User, TokenBlacklist
+from ..models import User, BlacklistedToken
 
 
 def make_token(user_id):
@@ -51,9 +52,8 @@ class LoginView(APIView):
 
 class LogoutView(APIView):
     authentication_classes = [JWTAuth]
+    permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        if not hasattr(request.user, 'id'):
-            return Response({'error': 'not authenticated'}, status=401)
-        TokenBlacklist.objects.get_or_create(token=request.auth)
+        BlacklistedToken.objects.get_or_create(token=request.auth)
         return Response({'ok': True})
